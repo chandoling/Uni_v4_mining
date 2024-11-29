@@ -31,7 +31,7 @@ const crypto = require('crypto');
 // 주어진 값들
 const initCodeHash = '0x94d114296a5af85c1fd2dc039cdaa32f1ed4b0fe0868f02d888bfc91feb645d9';
 const deployerAddress = '0x48E516B34A1274f49457b9C6182097796D0498Cb';
-const myAddress = '본인지갑주소'; 
+const myAddress = '0xb7E382763E6c1C9bC9bfDA51232AB8646Ad65cA9'; 
 
 // CREATE2 주소 생성 함수
 function computeCreate2Address(saltHex) {
@@ -42,52 +42,46 @@ function computeCreate2Address(saltHex) {
   );
 }
 
-// 점수 계산 함수
-function calculateScore(address) {
-  let score = 0;
-  const addr = address.toLowerCase().replace(/^0x/, '');
-  const nibbles = addr.split('');
+function calculateScore(address) { 
+  let score = 0; 
+  const addr = address.toLowerCase().replace(/^0x/, ''); 
+  const nibbles = addr.split(''); 
 
-  // 앞의 0 니블 개수 계산
-  let leadingZeroNibbles = 0;
-  for (let i = 0; i < nibbles.length; i++) {
-    if (nibbles[i] === '0') {
-      leadingZeroNibbles++;
-    } else {
-      break;
-    }
-  }
-  score += leadingZeroNibbles * 10;
+  // 앞의 0 니블 개수 계산 
+  let leadingZeroNibbles = 0; 
+  for (let i = 0; i < nibbles.length; i++) { 
+    if (nibbles[i] === '0') { 
+      leadingZeroNibbles++; 
+    } else { 
+      break; 
+    } 
+  } 
+  score += leadingZeroNibbles * 10; 
 
-  // 유효성 검사: 첫 번째 0이 아닌 니블이 4여야 함
-  if (nibbles[leadingZeroNibbles] !== '4') {
-    return 0; // 유효하지 않음
-  }
+  // 주소가 4444로 시작하는지 확인 
+  if (addr.startsWith('0'.repeat(leadingZeroNibbles) + '4444')) { 
+    score += 40; 
 
-  // 주소가 4444로 시작하는지 확인
-  if (addr.startsWith('0'.repeat(leadingZeroNibbles) + '4444')) {
-    score += 40;
+    // 그 다음 니블이 4가 아닌지 확인 
+    if (nibbles[leadingZeroNibbles + 4] !== '4') { 
+      score += 20; 
+    } 
+  } 
 
-    // 그 다음 니블이 4가 아닌지 확인
-    if (nibbles[leadingZeroNibbles + 4] !== '4') {
-      score += 20;
-    }
-  }
+  // 마지막 네 개 니블이 4인지 확인 
+  if (addr.endsWith('4444')) { 
+    score += 20; 
+  } 
 
-  // 마지막 네 개 니블이 4인지 확인
-  if (addr.endsWith('4444')) {
-    score += 20;
-  }
+  // 주소 내의 모든 4에 대해 1점씩 추가 
+  for (let i = leadingZeroNibbles; i < nibbles.length; i++) { 
+    if (nibbles[i] === '4') { 
+      score += 1; 
+    } 
+  } 
 
-  // 주소 내의 모든 4에 대해 1점씩 추가
-  for (let i = leadingZeroNibbles; i < nibbles.length; i++) {
-    if (nibbles[i] === '4') {
-      score += 1;
-    }
-  }
-
-  return score;
-}
+  return score; 
+} 
 
 // 채굴 시작
 async function mine() {
@@ -112,6 +106,7 @@ async function mine() {
 }
 
 mine();
+
 ```
 
 ---
