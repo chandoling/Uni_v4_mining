@@ -31,7 +31,7 @@ const crypto = require('crypto');
 // 주어진 값들
 const initCodeHash = '0x94d114296a5af85c1fd2dc039cdaa32f1ed4b0fe0868f02d888bfc91feb645d9';
 const deployerAddress = '0x48E516B34A1274f49457b9C6182097796D0498Cb';
-const myAddress = '0xb7E382763E6c1C9bC9bfDA51232AB8646Ad65cA9'; 
+const myAddress = '본인 지갑 주소'; 
 
 // CREATE2 주소 생성 함수
 function computeCreate2Address(saltHex) {
