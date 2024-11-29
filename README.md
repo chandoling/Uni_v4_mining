@@ -31,9 +31,7 @@ const crypto = require('crypto');
 // 주어진 값들
 const initCodeHash = '0x94d114296a5af85c1fd2dc039cdaa32f1ed4b0fe0868f02d888bfc91feb645d9';
 const deployerAddress = '0x48E516B34A1274f49457b9C6182097796D0498Cb';
-
-// 본인의 지갑 주소 입력
-const myAddress = '0x본인_지갑_주소';
+const myAddress = '본인지갑주소'; 
 
 // CREATE2 주소 생성 함수
 function computeCreate2Address(saltHex) {
@@ -63,7 +61,7 @@ function calculateScore(address) {
 
   // 유효성 검사: 첫 번째 0이 아닌 니블이 4여야 함
   if (nibbles[leadingZeroNibbles] !== '4') {
-    return 0;
+    return 0; // 유효하지 않음
   }
 
   // 주소가 4444로 시작하는지 확인
@@ -94,17 +92,18 @@ function calculateScore(address) {
 // 채굴 시작
 async function mine() {
   while (true) {
-    const randomBytes = crypto.randomBytes(12);
+    // salt 생성 (첫 20바이트는 자신의 주소 또는 0으로 채움)
+    const randomBytes = crypto.randomBytes(12); // 12바이트 (96비트)
     const saltBuffer = Buffer.concat([
-      Buffer.from(myAddress.slice(2).padStart(40, '0'), 'hex'),
-      randomBytes
+      Buffer.from(myAddress.slice(2).padStart(40, '0'), 'hex'), // 첫 20바이트
+      randomBytes // 마지막 12바이트
     ]);
     const saltHex = '0x' + saltBuffer.toString('hex');
 
     const address = computeCreate2Address(saltHex);
     const score = calculateScore(address);
 
-    if (score >= 100) { // 원하는 점수 기준
+    if (score >= 100) {
       const result = `Salt: ${saltHex}, Address: ${address}, Score: ${score}\n`;
       console.log(result);
       fs.appendFileSync('results.txt', result);
